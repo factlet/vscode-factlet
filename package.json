@@ -1,0 +1,51 @@
+{
+  "name": "factlet",
+  "displayName": "Factlet",
+  "description": "Syntax highlighting for Factlet, an incremental fact graph for rules-as-code",
+  "version": "0.1.0",
+  "publisher": "factlet",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/factlet/vscode-factlet"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "factlet",
+    "lisp",
+    "rules-as-code"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "factlet",
+        "aliases": [
+          "Factlet",
+          "factlet"
+        ],
+        "extensions": [
+          ".lisp"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "factlet",
+        "scopeName": "source.factlet",
+        "path": "./syntaxes/factlet.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "vscode-tmgrammar-test \"tests/**/*.lisp\""
+  },
+  "devDependencies": {
+    "vscode-tmgrammar-test": "^0.1.3"
+  }
+}

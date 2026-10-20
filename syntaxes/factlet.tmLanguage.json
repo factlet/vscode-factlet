@@ -1,0 +1,352 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Factlet",
+  "scopeName": "source.factlet",
+  "comment": "Atoms are runs of anything but whitespace and ( ) [ ] \" ; ' so rules that match an atom are bounded by (?<![^\\s()\\[\\]\";']) and (?![^\\s()\\[\\]\";']).",
+  "patterns": [
+    { "include": "#forms" }
+  ],
+  "repository": {
+    "forms": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#string" },
+        { "include": "#enum" },
+        { "include": "#defn" },
+        { "include": "#heads" },
+        { "include": "#type-annotation" },
+        { "include": "#keyword" },
+        { "include": "#quote" },
+        { "include": "#constant" },
+        { "include": "#date" },
+        { "include": "#number" },
+        { "include": "#brackets" },
+        { "include": "#symbol" }
+      ]
+    },
+    "comment": {
+      "name": "comment.line.semicolon.factlet",
+      "match": "(;).*$",
+      "captures": {
+        "1": { "name": "punctuation.definition.comment.factlet" }
+      }
+    },
+    "string": {
+      "name": "string.quoted.double.factlet",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.factlet" }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.factlet" }
+      },
+      "patterns": [
+        {
+          "name": "constant.character.escape.factlet",
+          "match": "\\\\[nt\"\\\\]"
+        },
+        {
+          "name": "invalid.illegal.unknown-escape.factlet",
+          "match": "\\\\.?"
+        }
+      ]
+    },
+    "enum": {
+      "comment": "(enum name variant …): every symbol after the name is a variant, and variants may span lines.",
+      "begin": "(\\()\\s*(enum)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.list.begin.factlet" },
+        "2": { "name": "storage.type.enum.factlet" },
+        "3": { "name": "entity.name.type.enum.factlet" }
+      },
+      "end": "(\\))|(?=[(\\[\\]])",
+      "endCaptures": {
+        "1": { "name": "punctuation.section.list.end.factlet" }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#string" },
+        {
+          "name": "variable.other.enummember.factlet",
+          "match": "[^\\s()\\[\\]\";']+"
+        }
+      ]
+    },
+    "defn": {
+      "comment": "(defn name [param : type …] body): the region ends after the parameter vector, and the body is ordinary forms.",
+      "begin": "(\\()\\s*(defn)(?![^\\s()\\[\\]\";'])",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.list.begin.factlet" },
+        "2": { "name": "storage.type.defn.factlet" }
+      },
+      "end": "(?<=\\])|(?=[()\\]])",
+      "patterns": [
+        { "include": "#comment" },
+        {
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": { "name": "punctuation.section.vector.begin.factlet" }
+          },
+          "end": "\\]|(?=[()])",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.vector.end.factlet" }
+          },
+          "patterns": [
+            { "include": "#comment" },
+            { "include": "#type-annotation" },
+            {
+              "name": "variable.parameter.factlet",
+              "match": "[^\\s()\\[\\]\";']+"
+            }
+          ]
+        },
+        {
+          "name": "entity.name.function.factlet",
+          "match": "[^\\s()\\[\\]\";']+"
+        }
+      ]
+    },
+    "heads": {
+      "comment": "Forms recognized by the symbol in head position.",
+      "patterns": [
+        {
+          "match": "(\\()\\s*(unit)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "storage.type.unit.factlet" },
+            "3": { "name": "entity.name.type.unit.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(input)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "storage.type.input.factlet" },
+            "3": { "name": "entity.name.variable.input.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(def)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "storage.type.def.factlet" },
+            "3": { "name": "entity.name.variable.def.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(collection)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "storage.type.collection.factlet" },
+            "3": { "name": "entity.name.type.collection.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(fixpoint)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "storage.type.fixpoint.factlet" },
+            "3": { "name": "variable.other.fixpoint.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(module)(?![^\\s()\\[\\]\";'])(?:\\s+([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "storage.type.module.factlet" },
+            "3": { "name": "entity.name.namespace.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(include)(?![^\\s()\\[\\]\";'])",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "keyword.control.import.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(test|given|member|empty|expect-error|expect)(?![^\\s()\\[\\]\";'])",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "keyword.other.test.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(if|cond|let|table|and|or|not)(?![^\\s()\\[\\]\";'])",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "keyword.control.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*([-+*/])(?![^\\s()\\[\\]\";'])",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "keyword.operator.arithmetic.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(<=|>=|!=|[=<>])(?![^\\s()\\[\\]\";'])",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "keyword.operator.comparison.factlet" }
+          }
+        },
+        {
+          "match": "(\\()\\s*(min-of|max-of|min|max|abs|round|floor|ceil|sum-list|map-list|sum|count|any|all|nth|brackets|age-on|months-between|days-between|year|month|day|given\\?|or-else)(?![^\\s()\\[\\]\";'])",
+          "captures": {
+            "1": { "name": "punctuation.section.list.begin.factlet" },
+            "2": { "name": "support.function.builtin.factlet" }
+          }
+        }
+      ]
+    },
+    "type-annotation": {
+      "comment": "A lone `:` (not a keyword) annotates the type that follows it: `x : usd`, `xs : [usd 12]`.",
+      "patterns": [
+        {
+          "begin": "(?<![^\\s()\\[\\]\";'])(:)(?![^\\s()\\[\\]\";'])\\s*(\\[)",
+          "beginCaptures": {
+            "1": { "name": "keyword.operator.type.annotation.factlet" },
+            "2": { "name": "punctuation.section.vector.begin.factlet" }
+          },
+          "end": "(\\])|(?=[()])",
+          "endCaptures": {
+            "1": { "name": "punctuation.section.vector.end.factlet" }
+          },
+          "patterns": [
+            { "include": "#type-items" }
+          ]
+        },
+        {
+          "match": "(?<![^\\s()\\[\\]\";'])(:)(?![^\\s()\\[\\]\";'])\\s*(?:(number|bool|string|date)(?![^\\s()\\[\\]\";'])|([^\\s()\\[\\]\";']+))?",
+          "captures": {
+            "1": { "name": "keyword.operator.type.annotation.factlet" },
+            "2": { "name": "support.type.builtin.factlet" },
+            "3": { "name": "entity.name.type.factlet" }
+          }
+        }
+      ]
+    },
+    "type-items": {
+      "patterns": [
+        { "include": "#comment" },
+        {
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": { "name": "punctuation.section.vector.begin.factlet" }
+          },
+          "end": "(\\])|(?=[()])",
+          "endCaptures": {
+            "1": { "name": "punctuation.section.vector.end.factlet" }
+          },
+          "patterns": [
+            { "include": "#type-items" }
+          ]
+        },
+        { "include": "#number" },
+        {
+          "name": "support.type.builtin.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])(?:number|bool|string|date)(?![^\\s()\\[\\]\";'])"
+        },
+        {
+          "name": "entity.name.type.factlet",
+          "match": "[^\\s()\\[\\]\";']+"
+        }
+      ]
+    },
+    "keyword": {
+      "name": "entity.other.attribute-name.factlet",
+      "match": "(?<![^\\s()\\[\\]\";'])(:)[^\\s()\\[\\]\";']+",
+      "captures": {
+        "1": { "name": "punctuation.definition.keyword.factlet" }
+      }
+    },
+    "quote": {
+      "patterns": [
+        {
+          "name": "variable.other.enummember.factlet",
+          "match": "(')\\s*[^\\s()\\[\\]\";']+",
+          "captures": {
+            "1": { "name": "punctuation.definition.quote.factlet" }
+          }
+        },
+        {
+          "name": "punctuation.definition.quote.factlet",
+          "match": "'"
+        }
+      ]
+    },
+    "constant": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])(?:true|false)(?![^\\s()\\[\\]\";'])"
+        },
+        {
+          "name": "constant.language.missing.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])\\?(?![^\\s()\\[\\]\";'])"
+        },
+        {
+          "name": "keyword.control.else.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])else(?![^\\s()\\[\\]\";'])"
+        }
+      ]
+    },
+    "date": {
+      "comment": "YYYY-MM-DD. The reader rejects shapes that aren't real calendar dates, Feb 29 included.",
+      "patterns": [
+        {
+          "name": "constant.numeric.date.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29)(?![^\\s()\\[\\]\";'])"
+        },
+        {
+          "name": "invalid.illegal.date.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])[0-9]{4}-[0-9]{2}-[0-9]{2}(?![^\\s()\\[\\]\";'])"
+        }
+      ]
+    },
+    "number": {
+      "comment": "[-] [prefix] digits [suffix], where the prefix has no letters, digits or + - . , _ %, `,` groups are three digits, and the suffix is the rest of the atom: $1,234.56 22% 5kWh. Shapes the reader rejects are invalid.",
+      "patterns": [
+        {
+          "name": "constant.numeric.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])-?([^\\s()\\[\\]\";'\\p{L}\\p{N}_+\\-.,%]+)?[0-9](?:[0-9_]{0,2}(?:,[0-9_]{3})+|[0-9_]*)(?:\\.[0-9_]+)?(?![0-9,._])([^\\s()\\[\\]\";']+)?",
+          "captures": {
+            "1": { "name": "keyword.other.unit.factlet" },
+            "2": { "name": "keyword.other.unit.factlet" }
+          }
+        },
+        {
+          "name": "invalid.illegal.number.factlet",
+          "match": "(?<![^\\s()\\[\\]\";'])-?[^\\s()\\[\\]\";'\\p{L}\\p{N}_+\\-.,%]*[0-9][^\\s()\\[\\]\";']*"
+        }
+      ]
+    },
+    "brackets": {
+      "patterns": [
+        {
+          "name": "punctuation.section.list.begin.factlet",
+          "match": "\\("
+        },
+        {
+          "name": "punctuation.section.list.end.factlet",
+          "match": "\\)"
+        },
+        {
+          "name": "punctuation.section.vector.begin.factlet",
+          "match": "\\["
+        },
+        {
+          "name": "punctuation.section.vector.end.factlet",
+          "match": "\\]"
+        }
+      ]
+    },
+    "symbol": {
+      "name": "meta.symbol.factlet",
+      "match": "[^\\s()\\[\\]\";']+"
+    }
+  }
+}
